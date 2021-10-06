@@ -3,8 +3,8 @@
 
 - name: Install software for IPI deployments
   import_tasks: base_software_ipi.yml
-  when: deploy_type == 'ipi' or deploy_sno
+  when: deploy_type == 'ipi'
 
 - name: Install software for SNO
   import_tasks: base_software_sno.yml
-  when: deploy_type == 'sno-ipi'
+  when: deploy_type == 'sno'
