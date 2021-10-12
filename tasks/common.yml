@@ -12,6 +12,26 @@
       - ansible_facts['os_family'] == 'RedHat'
       - ansible_facts['distribution_major_version'] == '8'
 
+- name: Prepare libvirt images storage VG
+  lvg:
+    vg: vg.libvirt
+    pvs: /dev/nvme0n1,/dev/nvme1n1
+  when: baremetal_provider == 'packet' or baremetal_prpovider == 'equinix_metal'
+
+- name: Prepare libvirt images storage LV
+  lvol:
+    vg: vg.libvirt
+    lv: lvimages
+    sire: 100%FREE
+    opts: -i 2 -I 4
+  when: baremetal_provider == 'packet' or baremetal_prpovider == 'equinix_metal'
+
+- name: Create filesystem on libvirt storage LV
+  filesystem:
+    fstype: ext4
+    dev: /dev/vg.libvirt/lvimages
+  when: baremetal_provider == 'packet' or baremetal_prpovider == 'equinix_metal'
+
 - name: Install EPEL Repo
   dnf:
     name: epel-release
@@ -41,6 +61,14 @@
   dnf:
     name: "*"
     state: latest
+
+- name: mount libvirt images backend storage if needed
+  mount:
+    path: /var/lib/libvirt/images
+    src: /dev/vg.libvirt/lvimages
+    fstype: ext4
+    state: mounted
+  when: baremetal_provider == 'packet' or baremetal_prpovider == 'equinix_metal'
 
 - name: Enable Libvirt
   ansible.builtin.systemd:
