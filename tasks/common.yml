@@ -53,6 +53,7 @@
       - sshpass
       - virt-what
       - nmap
+      - lvm2
       - python3-libselinux
     state: latest
   become: True
