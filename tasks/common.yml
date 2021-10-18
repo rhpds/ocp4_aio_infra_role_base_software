@@ -1,7 +1,7 @@
 ---
 # vim: set ft=ansible:
 
-- name: "Wait for {{ baremetal_provider }} instance to come online..."
+- name: "Wait for {{ ocp4_aio_baremetal_provider }} instance to come online..."
   wait_for_connection:
     timeout: 300
 
@@ -47,7 +47,7 @@
   lvg:
     vg: vg.libvirt
     pvs: /dev/nvme0n1,/dev/nvme1n1
-  when: baremetal_provider == 'packet' or baremetal_provider == 'equinix_metal'
+  when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
 
 - name: Prepare libvirt images storage LV
   lvol:
@@ -55,13 +55,13 @@
     lv: lvimages
     size: 100%FREE
     opts: -i 2 -I 4
-  when: baremetal_provider == 'packet' or baremetal_provider == 'equinix_metal'
+  when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
 
 - name: Create filesystem on libvirt storage LV
   filesystem:
     fstype: ext4
     dev: /dev/vg.libvirt/lvimages
-  when: baremetal_provider == 'packet' or baremetal_provider == 'equinix_metal'
+  when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
 
 - name: mount libvirt images backend storage if needed
   mount:
@@ -69,7 +69,7 @@
     src: /dev/vg.libvirt/lvimages
     fstype: ext4
     state: mounted
-  when: baremetal_provider == 'packet' or baremetal_provider == 'equinix_metal'
+  when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
 
 - name: Enable Libvirt
   ansible.builtin.systemd:
