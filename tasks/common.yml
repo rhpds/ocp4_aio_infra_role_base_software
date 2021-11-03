@@ -37,13 +37,13 @@
       - python3-libselinux
     state: latest
   become: True
-  skip_broken: true
+  nobest: yes
 
 - name: Upgrade all packages
   dnf:
     name: "*"
     state: latest
-    skip_broken: true
+    nobest: yes
 
 - name: Prepare libvirt images storage VG
   lvg:
