@@ -36,8 +36,8 @@
       - lvm2
       - python3-libselinux
     state: latest
+    skip_broken: yes
   become: True
-  skip_broken: yes
 
 - name: Upgrade all packages
   dnf:
