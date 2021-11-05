@@ -81,13 +81,13 @@
 
 - name: Enable Chronyd NTP Server
   ansible.builtin.replace:
-    path: /etc/chronyd.conf
+    path: /etc/chrony.conf
     regexp: '^#local stratum 10'
     replace: 'local stratum 10'
 
 - name: Enable Chronyd NTP Server
   ansible.builtin.replace:
-    path: /etc/chronyd.conf
+    path: /etc/chrony.conf
     regexp: '^#allow 192.168.0.0/16'
     replace: allow 192.168.123.0/24
 
