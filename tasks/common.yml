@@ -7,7 +7,7 @@
 
 - name: Gather minimal facts
   setup:
-    gather_subset: min
+    gather_subset: hardware
 
 - name: Check system matches requirements
   assert:
