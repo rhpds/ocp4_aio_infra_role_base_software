@@ -2,12 +2,14 @@
 # vim: set ft=ansible:
 
 - name: Install OpenStack repo for VirtualBMC
-  dnf:
-    name:
-      - https://repos.fedorapeople.org/repos/openstack/openstack-victoria/rdo-release-victoria-3.el8.noarch.rpm
-    state: latest
-    disable_gpg_check: yes
-  become: true
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/yum.repos.d/"
+    owner: root
+    group: root
+    mode: 0644
+  loop:
+    - openstack-victoria.repo
 
 - name: Install VirtualBMC packages and dependencies
   dnf:
