@@ -23,6 +23,39 @@
     disable_gpg_check: True
   become: True
 
+- name: Check if firewalld is available
+  ansible.builtin.command: systemctl status firewalld
+  register: firewalld_avail
+  failed_when: firewalld_avail.rc == 1
+
+- name: Check if iptables is available
+  ansible.builtin.command: systemctl status iptables
+  register: iptables_avail
+  failed_when: iptables_avail.rc == 1
+
+- name: Disable firewalld 
+  ansible.builtin.systemd:
+    name: firewalld
+    enabled: no
+    state: stopped
+  when:
+    - firewalld_avail.rc < 4
+
+- name: Install iptables if unavailable
+  dnf:
+    name:
+      - iptables
+    state: latest
+    skip_broken: yes
+  become: True
+  when: iptables_avail.rc != 4
+
+- name: Enable iptables for IPI deployments
+  systemd:
+    name: iptables
+    enabled: yes
+    state: started
+
 - name: Install required base packages
   dnf:
     name:
