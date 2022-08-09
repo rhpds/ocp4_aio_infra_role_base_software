@@ -48,7 +48,7 @@
     state: latest
     skip_broken: yes
   become: True
-  when: iptables_avail.rc != 4
+  when: iptables_avail.rc = 4
 
 - name: Enable iptables for IPI deployments
   systemd:
