@@ -17,7 +17,7 @@
       - ansible_facts['distribution_major_version'] == '8'
 
 - name: Install EPEL Repo
-  dnf:
+  ansible.builtin.dnf:
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
     state: present
     disable_gpg_check: True
@@ -42,22 +42,22 @@
     - firewalld_avail.rc < 4
 
 - name: Install iptables if unavailable
-  dnf:
+  ansible.builtin.dnf:
     name:
       - iptables
     state: latest
     skip_broken: yes
   become: True
-  when: iptables_avail.rc = 4
+  when: iptables_avail.rc == 4
 
 - name: Enable iptables for IPI deployments
-  systemd:
+  ansible.builtin.systemd:
     name: iptables
     enabled: yes
     state: started
 
 - name: Install required base packages
-  dnf:
+  ansible.builtin.dnf:
     name:
       - wget
       - libvirt
@@ -78,7 +78,7 @@
   become: True
 
 - name: Upgrade all packages
-  dnf:
+  ansible.builtin.dnf:
     name: "*"
     state: latest
     skip_broken: yes
