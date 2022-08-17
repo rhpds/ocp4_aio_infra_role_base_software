@@ -45,6 +45,7 @@
   ansible.builtin.dnf:
     name:
       - iptables
+      - iptables-services
     state: latest
     skip_broken: yes
   become: True
