@@ -115,7 +115,7 @@
 - name: Prepare ceph images storage VG
   lvg:
     vg: vg.ceph
-    pvs: /dev/sdc,/dev/sdd
+    pvs: /dev/sdb
   when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
 
 - name: Prepare ceph osd images storage LV
@@ -123,7 +123,6 @@
     vg: vg.ceph
     lv: lvosd
     size: 100%FREE
-    opts: -i 2 -I 4
   when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
 
 - name: Create filesystem on ceph osd storage LV
