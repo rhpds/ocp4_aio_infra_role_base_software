@@ -94,7 +94,7 @@
   lvol:
     vg: vg.libvirt
     lv: lvimages
-    size: 100%FREE
+    size: 10%FREE
     opts: -i 2 -I 4
   when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
 
