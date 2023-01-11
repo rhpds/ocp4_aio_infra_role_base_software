@@ -112,15 +112,9 @@
     state: mounted
   when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
 
-- name: Prepare ceph images storage VG
-  lvg:
-    vg: vg.ceph
-    pvs: /dev/sdb
-  when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
-
 - name: Prepare ceph osd images storage LV
   lvol:
-    vg: vg.ceph
+    vg: vg.libvirt
     lv: lvosd
     size: 100%FREE
   when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
@@ -128,7 +122,7 @@
 - name: Create filesystem on ceph osd storage LV
   filesystem:
     fstype: ext4
-    dev: /dev/vg.ceph/lvosd
+    dev: /dev/vg.libvirt/lvosd
   when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
 
 - name: create folder for ceph osd images
@@ -140,7 +134,7 @@
 - name: mount ceph osd images backend storage if needed
   mount:
     path: /var/lib/libvirt/images/ceph
-    src: /dev/vg.ceph/lvosd
+    src: /dev/vg.libvirt/lvosd
     fstype: ext4
     state: mounted
   when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
