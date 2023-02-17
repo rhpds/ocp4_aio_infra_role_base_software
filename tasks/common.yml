@@ -83,20 +83,30 @@
     name: "*"
     state: latest
     skip_broken: yes
+    
+- name: "Check if the node is using /dev/sda"
+  stat:
+    path: "/dev/sda"
+  register: result
 
 - name: Prepare libvirt images storage VG
   lvg:
     vg: vg.libvirt
     pvs: /dev/nvme0n1,/dev/nvme1n1
-  when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
-
+  when: result.stat.exists
+  
+- name: Prepare libvirt images storage VG
+  lvg:
+    vg: vg.libvirt
+    pvs: /dev/nvme2n1,/dev/nvme3n1
+  when: not result.stat.exists
+  
 - name: Prepare libvirt images storage LV
   lvol:
     vg: vg.libvirt
     lv: lvimages
     size: 10%FREE
     opts: -i 2 -I 4
-  when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
 
 - name: Create filesystem on libvirt storage LV
   filesystem:
