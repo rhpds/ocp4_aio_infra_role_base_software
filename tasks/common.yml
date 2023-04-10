@@ -78,11 +78,11 @@
     skip_broken: yes
   become: True
 
-- name: Upgrade all packages
-  ansible.builtin.dnf:
-    name: "*"
-    state: latest
-    skip_broken: yes
+# name: Upgrade all packages
+# ansible.builtin.dnf:
+#   name: "*"
+#   state: latest
+#   skip_broken: yes
     
 - name: "Check if the node is using /dev/sda"
   stat:
