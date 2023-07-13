@@ -83,71 +83,68 @@
 #   name: "*"
 #   state: latest
 #   skip_broken: yes
+- name: Configure libvirt VG/PV/FS
+  when: cloud_provider == "equinix_metal"
+  block: 
+  - name: "Check if the node is using /dev/sda"
+    stat:
+      path: "/dev/sda"
+    register: result
+
+  - name: Prepare libvirt images storage VG
+    lvg:
+      vg: vg.libvirt
+      pvs: /dev/nvme0n1,/dev/nvme1n1
+    when: result.stat.exists
     
-- name: "Check if the node is using /dev/sda"
-  stat:
-    path: "/dev/sda"
-  register: result
+  - name: Prepare libvirt images storage VG
+    lvg:
+      vg: vg.libvirt
+      pvs: /dev/nvme2n1,/dev/nvme3n1
+    when: not result.stat.exists
+    
+  - name: Prepare libvirt images storage LV
+    lvol:
+      vg: vg.libvirt
+      lv: lvimages
+      size: 10%FREE
+      opts: -i 2 -I 4
 
-- name: Prepare libvirt images storage VG
-  lvg:
-    vg: vg.libvirt
-    pvs: /dev/nvme0n1,/dev/nvme1n1
-  when: result.stat.exists
-  
-- name: Prepare libvirt images storage VG
-  lvg:
-    vg: vg.libvirt
-    pvs: /dev/nvme2n1,/dev/nvme3n1
-  when: not result.stat.exists
-  
-- name: Prepare libvirt images storage LV
-  lvol:
-    vg: vg.libvirt
-    lv: lvimages
-    size: 10%FREE
-    opts: -i 2 -I 4
+  - name: Create filesystem on libvirt storage LV
+    filesystem:
+      fstype: ext4
+      dev: /dev/vg.libvirt/lvimages
 
-- name: Create filesystem on libvirt storage LV
-  filesystem:
-    fstype: ext4
-    dev: /dev/vg.libvirt/lvimages
-  when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
+  - name: mount libvirt images backend storage if needed
+    mount:
+      path: /var/lib/libvirt/images
+      src: /dev/vg.libvirt/lvimages
+      fstype: ext4
+      state: mounted
 
-- name: mount libvirt images backend storage if needed
-  mount:
-    path: /var/lib/libvirt/images
-    src: /dev/vg.libvirt/lvimages
-    fstype: ext4
-    state: mounted
-  when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
+  - name: Prepare ceph osd images storage LV
+    lvol:
+      vg: vg.libvirt
+      lv: lvosd
+      size: 100%FREE
 
-- name: Prepare ceph osd images storage LV
-  lvol:
-    vg: vg.libvirt
-    lv: lvosd
-    size: 100%FREE
-  when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
+  - name: Create filesystem on ceph osd storage LV
+    filesystem:
+      fstype: ext4
+      dev: /dev/vg.libvirt/lvosd
 
-- name: Create filesystem on ceph osd storage LV
-  filesystem:
-    fstype: ext4
-    dev: /dev/vg.libvirt/lvosd
-  when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
+  - name: create folder for ceph osd images
+    ansible.builtin.file:
+      path: /var/lib/libvirt/images/ceph
+      state: directory
+      mode: 0755
 
-- name: create folder for ceph osd images
-  ansible.builtin.file:
-    path: /var/lib/libvirt/images/ceph
-    state: directory
-    mode: 0755
-
-- name: mount ceph osd images backend storage if needed
-  mount:
-    path: /var/lib/libvirt/images/ceph
-    src: /dev/vg.libvirt/lvosd
-    fstype: ext4
-    state: mounted
-  when: ocp4_aio_baremetal_provider == 'packet' or ocp4_aio_baremetal_provider == 'equinix_metal'
+  - name: mount ceph osd images backend storage if needed
+    mount:
+      path: /var/lib/libvirt/images/ceph
+      src: /dev/vg.libvirt/lvosd
+      fstype: ext4
+      state: mounted
 
 - name: Enable Libvirt
   ansible.builtin.systemd:
