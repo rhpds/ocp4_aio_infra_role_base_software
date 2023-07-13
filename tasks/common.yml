@@ -83,6 +83,14 @@
 #   name: "*"
 #   state: latest
 #   skip_broken: yes
+
+- name: create folder for ceph osd images
+  ansible.builtin.file:
+    path: /var/lib/libvirt/images/ceph
+    state: directory
+    mode: 0755
+
+
 - name: Configure libvirt VG/PV/FS
   when: cloud_provider == "equinix_metal"
   block: 
@@ -132,12 +140,6 @@
     filesystem:
       fstype: ext4
       dev: /dev/vg.libvirt/lvosd
-
-  - name: create folder for ceph osd images
-    ansible.builtin.file:
-      path: /var/lib/libvirt/images/ceph
-      state: directory
-      mode: 0755
 
   - name: mount ceph osd images backend storage if needed
     mount:
