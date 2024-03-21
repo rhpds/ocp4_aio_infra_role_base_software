@@ -4,7 +4,3 @@
 - name: Install software for IPI deployments
   import_tasks: base_software_ipi.yml
   when: ocp4_aio_deploy_type == 'ipi' or ocp4_aio_deploy_type =='sno'
-
-- name: Install software for SNO
-  import_tasks: base_software_sno.yml
-  when: ocp4_aio_deploy_type == 'sno'
