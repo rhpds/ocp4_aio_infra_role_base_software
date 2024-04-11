@@ -74,6 +74,8 @@
       - nmap
       - lvm2
       - python3-libselinux
+      - vim
+      - bind-utils
     state: latest
     skip_broken: yes
   become: True
@@ -114,7 +116,7 @@
     lvol:
       vg: vg.libvirt
       lv: lvimages
-      size: 10%FREE
+      size: 20%FREE
 
   - name: Create filesystem on libvirt storage LV
     filesystem:
