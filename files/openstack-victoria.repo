@@ -6,9 +6,9 @@ name=Extra Packages for Enterprise Linux $releasever - $basearch
 mirrorlist=http://ftp.pbone.net/mirror/ftp.centos.org/8-stream/cloud/x86_64/openstack-victoria/
 #baseurl=http://ftp.pbone.net/mirror/ftp.centos.org/8-stream/cloud/x86_64/openstack-victoria/
 
-# Other Mirrors if needed
-# https://mirror.nsc.liu.se/centos-store/8-stream/cloud/x86_64/openstack-victoria/ 
-# https://linuxsoft.cern.ch/centos-vault/8-stream/cloud/x86_64/openstack-victoria/
+#Other Mirrors if needed
+#https://mirror.nsc.liu.se/centos-store/8-stream/cloud/x86_64/openstack-victoria/ 
+#https://linuxsoft.cern.ch/centos-vault/8-stream/cloud/x86_64/openstack-victoria/
 enabled=1
 gpgcheck=0
 module_hotfixes=1
