@@ -93,9 +93,10 @@
         {{
           ansible_devices | 
           dict2items | 
-          rejectattr('key', 'match', '^loop|zram|dm') | 
-          selectattr('value.partitions', 'equalto', {}) | 
-          map(attribute='key') | 
+          rejectattr('key', 'match', '^loop|zram|dm') |
+          selectattr('value.partitions', 'equalto', {}) |
+          sort(attribute='value.size', reverse=True) |
+          map(attribute='key') |
           list
         }}
 
