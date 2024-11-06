@@ -87,22 +87,34 @@
 - name: Configure libvirt VG/PV/FS
   when: cloud_provider == "equinix_metal"
   block:
-  - name: "Check if the node is using /dev/sda"
-    ansible.builtin.stat:
-      path: "/dev/sda"
-    register: result
+  - name: Filter out loop and zram devices, and disks with partitions
+    set_fact:
+      unused_disks: >-
+        {{
+          ansible_devices | 
+          dict2items | 
+          rejectattr('key', 'match', '^loop|zram|dm') | 
+          selectattr('value.partitions', 'equalto', {}) | 
+          map(attribute='key') | 
+          list
+        }}
+
+  - name: Fail if no unused disks are found
+    fail:
+      msg: "No available unused disks were found on this system."
+    when: unused_disks | length == 0 
 
   - name: Prepare libvirt images storage VG
     community.general.lvg:
       vg: vg.libvirt
-      pvs: /dev/nvme1n1
-    when: result.stat.exists
+      pvs: "{{ unused_disks[0] }}"
+    when: unused_disks | length == 1
 
   - name: Prepare libvirt images storage VG
     community.general.lvg:
       vg: vg.libvirt
-      pvs: /dev/nvme2n1,/dev/nvme3n1
-    when: not result.stat.exists
+      pvs: "{{ unused_disks[0] }}, {{ unused_disks[1] }}"
+    when: unused_disks | length > 1
 
   - name: Prepare libvirt images storage LV
     community.general.lvol:
