@@ -107,13 +107,13 @@
   - name: Prepare libvirt images storage VG
     community.general.lvg:
       vg: vg.libvirt
-      pvs: "{{ unused_disks[0] }}"
+      pvs: "/dev/{{ unused_disks[0] }}"
     when: unused_disks | length == 1
 
   - name: Prepare libvirt images storage VG
     community.general.lvg:
       vg: vg.libvirt
-      pvs: "{{ unused_disks[0] }}, {{ unused_disks[1] }}"
+      pvs: "/dev/{{ unused_disks[0] }}, /dev/{{ unused_disks[1] }}"
     when: unused_disks | length > 1
 
   - name: Prepare libvirt images storage LV
